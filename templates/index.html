@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>test</title>
+		<link rel="stylesheet" href="static/style.css" />
+	</head>
+	<body>
+		<div id="input">
+			<form action="/" method="post">
+				<ul>
+					<li>
+						<label for="song_name">Song Name:</label>
+						<input type="text" id="song_name" name="song_name" />
+					</li>
+					<li class="button">
+						<button type="submit">Submit</button>
+					</li>
+				</ul>
+			</form>
+
+			<div id="buffer">
+				<p>Or</p>
+			</div>
+
+			<form action="/" method="post">
+				<ul>
+					<li>
+						<label for="test-feature-1">test-feature-1:</label>
+						<input type="text" id="test-feature-1" name="test_feature_1" />
+					</li>
+					<li>
+						<label for="test-feature-2">test-feature-2:</label>
+						<input type="text" id="test-feature-2" name="test_feature_2" />
+					</li>
+					<li>
+						<label for="test-feature-3">test-feature-3:</label>
+						<input type="text" id="test-feature-3" name="test_feature_3" />
+					</li>
+					<li class="button">
+						<button type="submit">Submit</button>
+					</li>
+				</ul>
+			</form>
+		</div>
+
+		{% if error_available %}
+			<p>{{ error }}</p>
+		{% else %}
+
+		{% endif %}
+
+		{% if features_available %}
+			<p>Features Used ------------------------------------------</p>
+			<ul>
+				{% for feature in features %}
+					<li>{{ feature }}</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+
+		{% endif %}
+
+		{% if output_available %}
+			<p>Output --------------------------------------------------</p>
+			<ul>
+				{% for song in songs %}
+					<li>{{ song }}</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+
+		{% endif %}
+	</body>
+</html>

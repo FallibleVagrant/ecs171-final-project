@@ -29,11 +29,11 @@ for label in labels:
     genre_group = df.loc[df['playlist_subgenre'] == label]
     remove_indices = []
     for category in numeric_categories:
-        q75 = genre_group["loudness"].quantile(0.75)
-        q25 = genre_group["loudness"].quantile(0.25)
+        q75 = genre_group[category].quantile(0.75)
+        q25 = genre_group[category].quantile(0.25)
         iqr = q75 - q25
-        remove_indices = genre_group.loc[genre_group["loudness"] >= q75 + 1.5 * iqr].index.tolist()
-        remove_indices.extend(genre_group.loc[genre_group["loudness"] <= q25 - 1.5 * iqr].index.tolist())
+        remove_indices = genre_group.loc[genre_group[category] >= q75 + 1.5 * iqr].index.tolist()
+        remove_indices.extend(genre_group.loc[genre_group[category] <= q25 - 1.5 * iqr].index.tolist())
     df = df.drop(remove_indices)
     df = df.reset_index(drop = True)
 
@@ -47,7 +47,7 @@ y_train = train["playlist_subgenre"]
 x_test = test.drop(columns = ["playlist_subgenre"])
 y_test = test["playlist_subgenre"]
 
-# Average accuracy: 0.2707
+# Average accuracy: 0.2728
 
 rf = RandomForestClassifier()
 

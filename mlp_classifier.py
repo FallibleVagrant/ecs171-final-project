@@ -28,11 +28,11 @@ for label in labels:
     genre_group = df.loc[df['playlist_subgenre'] == label]
     remove_indices = []
     for category in numeric_categories:
-        q75 = genre_group["loudness"].quantile(0.75)
-        q25 = genre_group["loudness"].quantile(0.25)
+        q75 = genre_group[category].quantile(0.75)
+        q25 = genre_group[category].quantile(0.25)
         iqr = q75 - q25
-        remove_indices = genre_group.loc[genre_group["loudness"] >= q75 + 1.5 * iqr].index.tolist()
-        remove_indices.extend(genre_group.loc[genre_group["loudness"] <= q25 - 1.5 * iqr].index.tolist())
+        remove_indices = genre_group.loc[genre_group[category] >= q75 + 1.5 * iqr].index.tolist()
+        remove_indices.extend(genre_group.loc[genre_group[category] <= q25 - 1.5 * iqr].index.tolist())
     df = df.drop(remove_indices)
     df = df.reset_index(drop = True)
 
@@ -48,29 +48,29 @@ y_test = test["playlist_subgenre"]
 # Optimal values found
 # nodes = (80, 10, 30)
 # rates = 0.02
-# epochs = 225
+# epochs = 1000
 # cross-validation average accuracy: 0.146
 
-nodes = [(40, 33, 38), (49, 38, 45), (80, 10, 30)]
-rates = [0.02, 0.05, 0.1]
-epochs = [200, 225, 250]
+# nodes = [(5, 13, 10), (49, 38, 45), (80, 10, 30)]
+# rates = [0.02, 0.1, 0.5]
+# epochs = [225, 450,1000]
 
-param_grid = dict(hidden_layer_sizes = nodes, learning_rate_init =  rates, max_iter = epochs)
-mlp = MLPClassifier(hidden_layer_sizes = (29, 20, 25), learning_rate_init = 0.01, max_iter = 150, activation = "logistic", solver = "sgd", random_state = 20, batch_size = 100)
-grid = GridSearchCV(estimator = mlp, param_grid = param_grid)
-grid.fit(x_train,y_train)
+# param_grid = dict(hidden_layer_sizes = nodes, learning_rate_init =  rates, max_iter = epochs)
+# mlp = MLPClassifier(hidden_layer_sizes = (29, 20, 25), learning_rate_init = 0.01, max_iter = 150, activation = "logistic", solver = "sgd", random_state = 20, batch_size = 100)
+# grid = GridSearchCV(estimator = mlp, param_grid = param_grid)
+# grid.fit(x_train,y_train)
 
-optimal_number_of_nodes = grid.best_params_["hidden_layer_sizes"]
-optimal_learning_rate = grid.best_params_["learning_rate_init"]
-optimal_number_of_epochs = grid.best_params_["max_iter"]
-optimal_mlp = MLPClassifier(hidden_layer_sizes = optimal_number_of_nodes, learning_rate_init = optimal_learning_rate, max_iter = optimal_number_of_epochs, activation = "logistic", solver = "sgd", random_state = 20, batch_size = 100)
+# optimal_number_of_nodes = grid.best_params_["hidden_layer_sizes"]
+# optimal_learning_rate = grid.best_params_["learning_rate_init"]
+# optimal_number_of_epochs = grid.best_params_["max_iter"]
+optimal_mlp = MLPClassifier(hidden_layer_sizes = (80, 30, 10), learning_rate_init = 0.02, max_iter = 1000, activation = "logistic", solver = "sgd", random_state = 20, batch_size = 100)
 optimal_mlp.fit(x_train, y_train)
 y_pred = optimal_mlp.predict(x_test)
 
-print("Optimal Hyper-parameters:", grid.best_params_)
+# print("Optimal Hyper-parameters:", grid.best_params_)
+print(classification_report(y_test, y_pred))
+
 cross_validation = cross_validate(optimal_mlp, x, y, cv = 10, scoring = ["accuracy"])
 average_accuracy = sum(cross_validation["test_accuracy"]) / len(cross_validation["test_accuracy"])
 print("Accuracy values:", cross_validation["test_accuracy"])
 print("Average accuracy:", average_accuracy, "\n")
-
-print(classification_report(y_test, y_pred))

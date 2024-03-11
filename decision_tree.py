@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
-#from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score, precision_score
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn.model_selection import GridSearchCV
-
 
 df = pd.read_csv("spotify_songs.csv")
 
@@ -38,59 +39,54 @@ for label in labels:
     df = df.drop(remove_indices)
     df = df.reset_index(drop = True)
 
+# Ordinal encode y for DecisionTreeClassifier
+#cat = ["playlist_genre"]
+#enc = OrdinalEncoder()
+#enc.fit(df[cat])
+#df[cat] = enc.transform(df[cat])
+
 x = df.drop(columns = ["playlist_genre"])
 y = df["playlist_genre"]
 
+# Intervene and set y and df to use one hot encoding.
+y_onehot = pd.get_dummies(y, prefix="genre")
+df.drop(columns = ["playlist_genre"], inplace = True)
+df = pd.concat([df, y_onehot], axis = 1)
+y = y_onehot
+
+cats = ["genre_edm", "genre_latin", "genre_pop", "genre_r&b", "genre_rap", "genre_rock"]
+
 train, test = train_test_split(df, test_size = 0.2, random_state = 20)
-x_train, y_train = train.drop(columns = ["playlist_genre"]), train["playlist_genre"]
-x_test, y_test = test.drop(columns = ["playlist_genre"]), test["playlist_genre"]
+x_train = train.drop(columns = cats)
+y_train = train[cats]
 
-# Grid Search!
-degree = [5, 7]
-kernels = ["rbf", "poly"]
-regularization = [1, 3, 5]
-gamma = [0.1, 0.2, 0.5]
+x_test = test.drop(columns = cats)
+y_test = test[cats]
 
-from sklearn.svm import SVC
+# (Thank you, Kevin.)
+#min_samples_for_split = [3, 4, 5, 6, 7]
+#min_samples_for_leaf = [1, 2, 3, 4, 5, 6, 7]
+#
+#param_grid = dict(min_samples_split = min_samples_for_split,
+#                  min_samples_leaf = min_samples_for_leaf)
+#clf = DecisionTreeClassifier(random_state = 20)
+#grid = GridSearchCV(estimator = clf, param_grid = param_grid, cv = 10)
+#grid.fit(x_train,y_train)
+#
+#print("Optimal Hyper-parameters:", grid.best_params_)
+#optimal_min_samples_split = grid.best_params_["min_samples_split"]
+#optimal_min_samples_leaf = grid.best_params_["min_samples_leaf"]
 
-param_grid = dict(degree = degree,
-                  kernel = kernels,
-                  C = regularization,
-                  gamma = gamma)
-clf = SVC(random_state = 20)
-grid = GridSearchCV(estimator = clf, param_grid = param_grid, cv = 3)
-grid.fit(x_train,y_train)
+# Average accuracy: 0.5311
 
-print("Optimal Hyper-parameters:", grid.best_params_)
-degree = grid.best_params_["degree"]
-kernels = grid.best_params_["kernel"]
-regularization = grid.best_params_["C"]
-gamma = grid.best_params_["gamma"]
+clf = DecisionTreeClassifier(criterion = "entropy", max_features = len(cats), min_samples_split=4)
+clf.fit(x_train, y_train)
+y_pred = clf.predict(x_test)
 
-# Optimal parameters: kernel: poly, degree: 7
-
-from sklearn.preprocessing import StandardScaler
-
-svc_rbf = SVC(kernel='poly', degree=7)
-
-scaler = StandardScaler()
-scaler.fit(x_train)
-
-x_train_scaled = scaler.transform(x_train)
-x_test_scaled = scaler.transform(x_test)
-
-print("Training...")
-svc_rbf.fit(x_train_scaled, np.asarray(y_train))
-
-print("Classifying...")
-y_pred = svc_rbf.predict(x_test_scaled)
-print("Done!")
-print('RBF Kernel')
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Precision:", precision_score(y_test, y_pred, average = "macro"))
 print(classification_report(y_test, y_pred))
-
-cross_validation = cross_validate(svc_rbf, x, y, cv = 10, scoring = ["accuracy"])
+cross_validation = cross_validate(clf, x, y, cv = 10, scoring = ["accuracy"])
 average_accuracy = sum(cross_validation["test_accuracy"]) / len(cross_validation["test_accuracy"])
 print("Accuracy values:", cross_validation["test_accuracy"])
 print("Average accuracy:", average_accuracy, "\n")

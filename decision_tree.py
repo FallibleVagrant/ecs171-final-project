@@ -51,6 +51,7 @@ def test_model(df):
 #    optimal_min_samples_leaf = grid.best_params_["min_samples_leaf"]
 
     # Hardcoded values!
+    print("WARNING! Using hardcoded optimal values instead of performing grid search.")
     optimal_min_samples_split = 2
     optimal_min_samples_leaf = 7
     

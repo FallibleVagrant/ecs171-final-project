@@ -40,11 +40,17 @@ def test_model(df):
 
     x = df.drop(columns = ["track_name", "track_artist", "playlist_genre"])
     y = df["playlist_genre"]
-    cross_validation = cross_validate(optimal_mlp, x, y, cv = 10, scoring = ["accuracy"])
+    cross_validation = cross_validate(optimal_mlp, x, y, cv = 10, scoring = ["accuracy", "precision_macro", "recall_macro"])
     average_accuracy = sum(cross_validation["test_accuracy"]) / len(cross_validation["test_accuracy"])
+    average_precision = sum(cross_validation["test_precision_macro"]) / len(cross_validation["test_precision_macro"])
+    average_recall = sum(cross_validation["test_recall_macro"]) / len(cross_validation["test_recall_macro"])
     print("10-fold cross validation:")
     print("Accuracy values:", cross_validation["test_accuracy"])
-    print("Average accuracy:", average_accuracy)    
+    print("Average accuracy:", average_accuracy, "\n")
+    print("Precision values:", cross_validation["test_precision_macro"])
+    print("Average precision:", average_precision, "\n")
+    print("Recall values:", cross_validation["test_recall_macro"])
+    print("Average recall:", average_recall)      
 
 if __name__ == "__main__":
     df = pd.read_csv("spotify_songs.csv")

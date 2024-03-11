@@ -15,20 +15,27 @@ def test_model(df):
     x_test = test.drop(columns = ["track_name", "track_artist", "playlist_genre"])
     y_test = test["playlist_genre"]
 
-    number_estimators = [125, 155, 195]
-    min_samples_for_split = [3, 4, 5]
-    min_samples_for_leaf = [1, 2, 3]
+# Uncomment this block and remove hardcoded values to run grid search.
+#    number_estimators = [125, 155, 195]
+#    min_samples_for_split = [3, 4, 5]
+#    min_samples_for_leaf = [1, 2, 3]
+#
+#    param_grid = dict(n_estimators = number_estimators, min_samples_split = min_samples_for_split,
+#                      min_samples_leaf = min_samples_for_leaf)
+#    rf = RandomForestClassifier(random_state = 20)
+#    grid = GridSearchCV(estimator = rf, param_grid = param_grid, cv = 3)
+#    grid.fit(x_train,y_train)
+#
+#    print("Optimal Hyper-parameters:", grid.best_params_)
+#    optimal_n_estimators = grid.best_params_["n_estimators"]
+#    optimal_min_samples_split = grid.best_params_["min_samples_split"]
+#    optimal_min_samples_leaf = grid.best_params_["min_samples_leaf"]
 
-    param_grid = dict(n_estimators = number_estimators, min_samples_split = min_samples_for_split,
-                      min_samples_leaf = min_samples_for_leaf)
-    rf = RandomForestClassifier(random_state = 20)
-    grid = GridSearchCV(estimator = rf, param_grid = param_grid, cv = 3)
-    grid.fit(x_train,y_train)
-
-    print("Optimal Hyper-parameters:", grid.best_params_)
-    optimal_n_estimators = grid.best_params_["n_estimators"]
-    optimal_min_samples_split = grid.best_params_["min_samples_split"]
-    optimal_min_samples_leaf = grid.best_params_["min_samples_leaf"]
+    # Hardcoded values!
+    print("WARNING! Using hardcoded optimal values instead of performing grid search.")
+    optimal_n_estimators = 195
+    optimal_min_samples_split = 3
+    optimal_min_samples_leaf = 1
 
     optimal_rf = RandomForestClassifier(n_estimators = optimal_n_estimators, min_samples_split = optimal_min_samples_split, min_samples_leaf = optimal_min_samples_leaf, random_state = 20)
     optimal_rf.fit(x_train, y_train)

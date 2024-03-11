@@ -15,6 +15,7 @@ def test_model(df):
     x_test = test.drop(columns = ["track_name", "track_artist", "playlist_genre"])
     y_test = test["playlist_genre"]
 
+# Comment this block and uncomment hardcoded values to avoid running grid search.
     nodes = [(8, 14, 7), (20, 23, 37), (80, 10, 30)]
     rates = [0.02, 0.1, 0.5]
     epochs = [800, 1000, 1200]
@@ -28,6 +29,12 @@ def test_model(df):
     optimal_number_of_nodes = grid.best_params_["hidden_layer_sizes"]
     optimal_learning_rate = grid.best_params_["learning_rate_init"]
     optimal_number_of_epochs = grid.best_params_["max_iter"]
+
+    # Hardcoded values!
+    #print("WARNING! Using hardcoded optimal values instead of performing grid search.")
+    #optimal_number_of_nodes = (8, 10, 30)
+    #optimal_learning_rate = 0.02
+    #optimal_number_of_epochs = 800
 
     optimal_mlp = MLPClassifier(hidden_layer_sizes = optimal_number_of_nodes, learning_rate_init = optimal_learning_rate, max_iter = optimal_number_of_epochs, activation = "logistic", solver = "sgd", random_state = 20, batch_size = 100)
     optimal_mlp.fit(x_train, y_train)

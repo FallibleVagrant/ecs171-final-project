@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
@@ -8,11 +9,23 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score
 from eda import clean_data
 
 def test_model(df):
+    # Preprocess with PCA
+    df = df.drop(columns = ["track_name", "track_artist"])
+    numeric_categories = ["danceability", "energy", "loudness", "speechiness", "acousticness", "liveness", "valence", "tempo", "duration_ms", "track_popularity", "key", "mode"]
+    pca = PCA(n_components=4, svd_solver='auto')
+    scaled_numerics = pd.DataFrame(pca.fit_transform(df[numeric_categories]))
+    df.drop(columns = numeric_categories, inplace=True)
+    df = pd.concat([df, scaled_numerics], axis = 1)
+
+    #To obviate an obscure error.
+    df.columns = df.columns.astype(str)
+    print(df.head())
+
     train, test = train_test_split(df, test_size = 0.2, random_state = 20)
-    x_train = train.drop(columns = ["track_name", "track_artist", "playlist_genre"])
+    x_train = train.drop(columns = ["playlist_genre"])
     y_train = train["playlist_genre"]
     
-    x_test = test.drop(columns = ["track_name", "track_artist", "playlist_genre"])
+    x_test = test.drop(columns = ["playlist_genre"])
     y_test = test["playlist_genre"]
 
 # Comment this block and uncomment hardcoded values to avoid running grid search.
@@ -32,7 +45,7 @@ def test_model(df):
 
     # Hardcoded values!
     #print("WARNING! Using hardcoded optimal values instead of performing grid search.")
-    #optimal_number_of_nodes = (8, 10, 30)
+    #optimal_number_of_nodes = (20, 23, 37)
     #optimal_learning_rate = 0.02
     #optimal_number_of_epochs = 800
 
@@ -45,7 +58,7 @@ def test_model(df):
     print("Precision:", precision_score(y_test, y_pred, average = "macro"))
     print("Recall:", recall_score(y_test, y_pred, average = "macro"), "\n")
 
-    x = df.drop(columns = ["track_name", "track_artist", "playlist_genre"])
+    x = df.drop(columns = ["playlist_genre"])
     y = df["playlist_genre"]
     cross_validation = cross_validate(optimal_mlp, x, y, cv = 10, scoring = ["accuracy", "precision_macro", "recall_macro"])
     average_accuracy = sum(cross_validation["test_accuracy"]) / len(cross_validation["test_accuracy"])

@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score, precision_score
+from sklearn.model_selection import GridSearchCV
 
 
 df = pd.read_csv("spotify_songs.csv")
@@ -44,10 +45,33 @@ train, test = train_test_split(df, test_size = 0.2, random_state = 20)
 x_train, y_train = train.drop(columns = ["playlist_genre"]), train["playlist_genre"]
 x_test, y_test = test.drop(columns = ["playlist_genre"]), test["playlist_genre"]
 
-from sklearn.preprocessing import StandardScaler
+# Grid Search!
+degree = [5, 7]
+kernels = ["rbf", "poly"]
+regularization = [1, 3, 5]
+gamma = [0.1, 0.2, 0.5]
+
 from sklearn.svm import SVC
 
-svc_rbf = SVC(kernel='rbf')
+param_grid = dict(degree = degree,
+                  kernel = kernels,
+                  C = regularization,
+                  gamma = gamma)
+clf = SVC(random_state = 20)
+grid = GridSearchCV(estimator = clf, param_grid = param_grid, cv = 3)
+grid.fit(x_train,y_train)
+
+print("Optimal Hyper-parameters:", grid.best_params_)
+degree = grid.best_params_["degree"]
+kernels = grid.best_params_["kernel"]
+regularization = grid.best_params_["C"]
+gamma = grid.best_params_["gamma"]
+
+# Optimal parameters: kernel: poly, degree: 7
+
+from sklearn.preprocessing import StandardScaler
+
+svc_rbf = SVC(kernel='poly', degree=7)
 
 scaler = StandardScaler()
 scaler.fit(x_train)

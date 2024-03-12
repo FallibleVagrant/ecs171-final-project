@@ -12,7 +12,8 @@ def get_song(name):
 
     if len(results["tracks"]["items"]) > 0:
         item = results["tracks"]["items"][0]
-        song = item["name"] + " by " + item["artists"][0]["name"]
+        track_name = item["name"]
+        track_artist = item["artists"][0]["name"]
         id = item["id"]
         track_popularity = item["popularity"]
 
@@ -30,6 +31,6 @@ def get_song(name):
         tempo = song_features["tempo"]
         duration_ms = song_features["duration_ms"]
 
-        return song, [track_popularity, danceability, energy, key, loudness, mode, speechiness, acousticness, liveness, valence, tempo, duration_ms]
+        return [track_name, track_artist, track_popularity, danceability, energy, key, loudness, mode, speechiness, acousticness, liveness, valence, tempo, duration_ms]
     else:
-        return None, None
+        return None

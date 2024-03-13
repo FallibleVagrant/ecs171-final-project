@@ -87,11 +87,13 @@
 
 		{% if features_available %}
 			<p>Features Used ------------------------------------------</p>
-			<ul>
+			<p>{{ features }}</p>
+			<!--<ul>
 				{% for feature in features %}
 					<li>{{ feature }}</li>
 				{% endfor %}
 			</ul>
+			-->
 		{% else %}
 
 		{% endif %}

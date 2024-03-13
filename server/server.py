@@ -55,23 +55,27 @@ def receive_form_data():
             if line == "":
                 return render_error("Could not retrieve any songs from given search terms!")
 
-        return render_template("index.html", output_available=True, output_lines=output_lines)
+        features = features[2:]
+        return render_template("index.html", output_available=True, output_lines=output_lines, features_available=True, features=f'{features}')
     #If song name isn't provided, a KeyError will be raised,
     #and we'll try to look for features instead.
     except KeyError as e:
         #Get the variables from the form.
-        track_popularity = request.form["track_popularity"] 
-        danceability = request.form["danceability"]
-        energy = request.form["energy"]
-        key = request.form["key"]
-        loudness = request.form["loudness"]
-        mode = request.form["mode"]
-        speechiness = request.form["speechiness"]
-        acousticness = request.form["acousticness"]
-        liveness = request.form["liveness"]
-        valence = request.form["valence"]
-        tempo = request.form["tempo"]
-        duration_ms = request.form["duration_ms"]
+        try:
+            track_popularity = float(request.form["track_popularity"])
+            danceability = float(request.form["danceability"])
+            energy = float(request.form["energy"])
+            key = float(request.form["key"])
+            loudness = float(request.form["loudness"])
+            mode = float(request.form["mode"])
+            speechiness = float(request.form["speechiness"])
+            acousticness = float(request.form["acousticness"])
+            liveness = float(request.form["liveness"])
+            valence = float(request.form["valence"])
+            tempo = float(request.form["tempo"])
+            duration_ms = float(request.form["duration_ms"])
+        except ValueError:
+            return render_error("Could not convert input to float value!")
 
         #Put them into an array.
         features = ["This song should never appear and if it does that means it's broken.", "This artist should never appear and if it does that means it's broken.", track_popularity, danceability, energy, key, loudness, mode, speechiness, acousticness, liveness, valence, tempo, duration_ms]
@@ -91,7 +95,8 @@ def receive_form_data():
         recommendations = f"Similar songs in the same genre: {recommendations}"
 
         output_lines = [returned_genre, recommendations]
-        return render_template("index.html", features_available=False, features=features, output_available=True, output_lines=output_lines)
+        features = features[2:]
+        return render_template("index.html", features_available=True, features=f'{features}', output_available=True, output_lines=output_lines)
 
 from flask import url_for
 from flask import Response

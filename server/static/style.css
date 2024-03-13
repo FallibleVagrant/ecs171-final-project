@@ -11,3 +11,8 @@
 ul {
 	list-style-type: none;
 }
+
+#feature-input li {
+	display: grid;
+	grid-template-columns: 1fr 1fr
+}

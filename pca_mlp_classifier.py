@@ -19,7 +19,6 @@ def test_model(df):
 
     #To obviate an obscure error.
     df.columns = df.columns.astype(str)
-    print(df.head())
 
     train, test = train_test_split(df, test_size = 0.2, random_state = 20)
     x_train = train.drop(columns = ["playlist_genre"])

@@ -46,10 +46,10 @@ x_train, y_train = train.drop(columns = ["playlist_genre"]), train["playlist_gen
 x_test, y_test = test.drop(columns = ["playlist_genre"]), test["playlist_genre"]
 
 # Grid Search!
-degree = [5, 7]
-kernels = ["rbf", "poly"]
-regularization = [1, 3, 5]
-gamma = [0.1, 0.2, 0.5]
+degree = [7]
+kernels = ["linear", "rbf", "poly"]
+regularization = [1, 5]
+gamma = [0.1, 0.3]
 
 from sklearn.svm import SVC
 
@@ -57,21 +57,21 @@ param_grid = dict(degree = degree,
                   kernel = kernels,
                   C = regularization,
                   gamma = gamma)
-clf = SVC(random_state = 20)
+clf = SVC(random_state = 21)
 grid = GridSearchCV(estimator = clf, param_grid = param_grid, cv = 3)
 grid.fit(x_train,y_train)
 
 print("Optimal Hyper-parameters:", grid.best_params_)
-degree = grid.best_params_["degree"]
-kernels = grid.best_params_["kernel"]
-regularization = grid.best_params_["C"]
-gamma = grid.best_params_["gamma"]
+optimal_degree = grid.best_params_["degree"]
+optimal_kernel = grid.best_params_["kernel"]
+optimal_regularization = grid.best_params_["C"]
+optimal_gamma = grid.best_params_["gamma"]
 
 # Optimal parameters: kernel: poly, degree: 7
 
 from sklearn.preprocessing import StandardScaler
 
-svc_rbf = SVC(kernel='poly', degree=7)
+svc_rbf = SVC(kernel=optimal_kernel, degree=optimal_degree, C=optimal_regularization, gamma=optimal_gamma)
 
 scaler = StandardScaler()
 scaler.fit(x_train)

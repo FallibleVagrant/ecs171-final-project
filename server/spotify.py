@@ -1,7 +1,7 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-def get_song(name):
+def get_song_features(name):
     client_id = "cadac62f48aa440b957ed19a23128f45"
     client_secret = "b029904c925b495db4dc7dc388afd77d"
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>test</title>
+		<title>Genre Identification Demo</title>
 		<link rel="stylesheet" href="static/style.css" />
 	</head>
 	<body>
@@ -63,8 +63,8 @@
 		{% if output_available %}
 			<p>Output --------------------------------------------------</p>
 			<ul>
-				{% for song in songs %}
-					<li>{{ song }}</li>
+				{% for line in output_lines %}
+					<li>{{ line }}</li>
 				{% endfor %}
 			</ul>
 		{% else %}

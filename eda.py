@@ -67,6 +67,7 @@ def clean_data(df):
     
     return df
 
-df = pd.read_csv("spotify_songs.csv")
-graph_distributions(df)
-graph_boxplots(df)
+if __name__ == "__main__":
+    df = pd.read_csv("spotify_songs.csv")
+    graph_distributions(df)
+    graph_boxplots(df)

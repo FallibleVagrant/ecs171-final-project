@@ -4,12 +4,17 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.pairwise import pairwise_distances
+
+# Terrible hack to import from above directory.
+import sys
+sys.path.insert(1, '../')
+
 from eda import clean_data
 from spotify import get_song_features
 import pickle
 
 def train_model():
-    df = pd.read_csv("spotify_songs.csv")
+    df = pd.read_csv("../spotify_songs.csv")
     df = clean_data(df)
 
     train, test = train_test_split(df, test_size = 0.2, random_state = 20)
@@ -28,7 +33,7 @@ def predict(song_df):
     with open('random_forest.pkl', 'rb') as file:
         rf = pickle.load(file)
 
-    df = pd.read_csv("spotify_songs.csv")
+    df = pd.read_csv("../spotify_songs.csv")
     df = clean_data(df)
 
     scaler = MinMaxScaler(feature_range = (0,1))

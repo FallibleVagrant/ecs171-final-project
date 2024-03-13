@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.pairwise import pairwise_distances
 from eda import clean_data
-from spotify import get_song
+from spotify import get_song_features
 import pickle
 
 def train_model():
@@ -52,7 +52,7 @@ def predict(song_df):
     return genre_prediction, recommendations
 
 if __name__ == "__main__":
-    song = get_song("numb")
+    song = get_song_features("numb")
     print("Song:", song)
     columns = ["track_name", "track_artist", "track_popularity", "danceability", "energy", "key", "loudness", "mode", "speechiness", "acousticness", "liveness", "valence", "tempo", "duration_ms"]
     song_df = pd.DataFrame(data = [song], columns = columns)
